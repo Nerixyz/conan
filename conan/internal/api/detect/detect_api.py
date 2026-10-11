@@ -279,11 +279,16 @@ def default_msvc_runtime(compiler):
     if platform.system() != "Windows":
         return None, None
     if compiler == "clang":
+        _msvc, version, _compiler_exe = detect_msvc_compiler()
+        if version is None:
+            version = "v143"
+        else:
+            version = f"v{version}"
         # It could be LLVM/Clang with VS runtime or Msys2 with libcxx
-        ConanOutput(scope="detect_api").warning("Assuming LLVM/Clang in Windows with VS 17 2022")
+        ConanOutput(scope="detect_api").warning(f"Assuming LLVM/Clang in Windows with {version} MSVC runtime")
         ConanOutput(scope="detect_api").warning("If Msys2/Clang need to remove compiler.runtime* "
                                                 "and define compiler.libcxx")
-        return "dynamic", "v143"
+        return "dynamic", version
     elif compiler == "msvc":
         # Add default mandatory fields for MSVC compiler
         return "dynamic", None
